@@ -8,15 +8,11 @@ const employees = [
 ]
 
 //create getAll method that returns all array items
-const getAll = function () {
-    return employees;
-}
+const getAll = () => employees;
 
 //create a getItem method that returns a single item
-const getItem = function (employees, search) {
-    const index = employees.findIndex(function (employee) {
-        return employee.name === search.toLowerCase()
-    })// close findIndex
+const getItem = (employees, search) => {
+    const index = employees.findIndex(employee => employee.name === search.toLowerCase())
     if (index === -1) {
         return { error: 'No employee with that name' }
     } else {

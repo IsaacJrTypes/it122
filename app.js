@@ -10,7 +10,7 @@ import * as data from './data.js'
 import { parse } from "querystring";
 
 //create pathRedirect
-const pathRedirect =  function (req, res) {
+const pathRedirect = (req, res) => {
     console.log(req.url);
     const path = req.url.toLowerCase();
     const url = path.split("?"); // url split at ? into array
@@ -28,7 +28,7 @@ const pathRedirect =  function (req, res) {
             break;
         case queryDetail:
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.write(JSON.stringify(data.getItem(data.employees,queryObj.name)));
+            res.write(JSON.stringify(data.getItem(data.employees, queryObj.name)));
             break;
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -41,7 +41,7 @@ const pathRedirect =  function (req, res) {
 const server = http.createServer(pathRedirect);
 
 //show err msg, else print port
-const errMsg = function (err) {
+const errMsg = (err) => {
     if (err) {
         console.log(`There is an error: ${err}`);
     } else {
