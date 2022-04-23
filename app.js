@@ -1,52 +1,49 @@
 //import http module
 import http from 'http';
-//import file system
-import fs from 'fs';
 //setup port
 const port = 3000;
 //import data.js
 import * as data from './data.js';
 //import parser
 import { parse } from 'querystring';
+//import express
+import express from 'express';
 
-//create pathRedirect
-const pathRedirect = (req, res) => {
-	console.log(req.url);
-	const path = req.url.toLowerCase();
-	const url = path.split('?'); // url split at ? into array
-	let queryObj = parse(url[1]); // turn arrayItem[1] into object
-	let queryDetail = '/detail?' + url[1]; //concat query for routing
+const app = express();//set port
+app.set('port', process.env.PORT || 3000);
+app.use(express.static('./public')); // send static files
+app.use(express.urlencoded()); //send Parse URL-encoded bodies
+app.use(express.json()); //parses json bodies
+app.set('view engine', 'ejs');//sets ejs as view engine
 
-	switch (path) {
-		case '/':
-			res.writeHead(200, { 'Content-Type': 'text/html' });
-			res.write(JSON.stringify(data.getAll()));
-			break;
-		case '/about':
-			res.writeHead(200, { 'Content-Type': 'text/html' });
-			res.write('I like turtles');
-			break;
-		case queryDetail:
-			res.writeHead(200, { 'Content-Type': 'text/html' });
-			res.write(JSON.stringify(data.getItem(data.employees, queryObj.name)));
-			break;
-		default:
-			res.writeHead(404, { 'Content-Type': 'text/plain' });
-			res.end('404: Please try again');
-			break;
-	}
-};
+// send static file as response
+app.get('/', (req, res) => {
+	res.type('text/html');
+	res.render('home', { test: {prop:'Testing...'}, employ: data.getAll() });	
+});
 
-//create server funct in var
-const server = http.createServer(pathRedirect);
+// send plain text response
+app.get('/about', (req, res) => {
+	res.type('text/plain');
+	res.send('I like turtles');
+});
 
-//show err msg, else print port
-const errMsg = (err) => {
-	if (err) {
-		console.log(`There is an error: ${err}`);
-	} else {
-		console.log(`Server is listening on port: ${port}`);
-	}
-};
+// send detail query
+app.get('/detail', (req, res) => {
+	console.log(req.query.name)
+	let search = data.getItem(req.query.name)
+	res.type('text/html');
+	res.render('detail', { name: search.name, position: search.position, startTime: search.startTime, endTime: search.endTime, error: search.error })
+});
 
-server.listen(port, errMsg);
+// define 404 handler
+app.use((req, res) => {
+	res.type('text/plain');
+	res.status(404);
+	res.send('404 - Not found');
+});
+
+app.listen(app.get('port'), () => {
+	console.log('Express started');
+   });
+

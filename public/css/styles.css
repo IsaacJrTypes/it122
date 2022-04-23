@@ -1,0 +1,32 @@
+/* CSS Reset */
+html {
+    box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+box-sizing: inherit;
+margin: 0;
+padding: 0;
+border: 0;
+line-height: 1.2;
+}
+
+img {
+width: 100%;
+}
+/* End of RESETS */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    background-color: rgb(52, 123, 123);
+    margin: 16px;
+}
+
+h1 {
+    text-align: center;
+    background-color: gold;
+}
