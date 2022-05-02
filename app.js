@@ -1,11 +1,5 @@
-//import http module
-import http from 'http';
-//setup port
-const port = 3000;
 //import data.js
 import * as data from './data.js';
-//import parser
-import { parse } from 'querystring';
 //import express
 import express from 'express';
 
@@ -19,7 +13,7 @@ app.set('view engine', 'ejs');//sets ejs as view engine
 // send static file as response
 app.get('/', (req, res) => {
 	res.type('text/html');
-	res.render('home', { test: {prop:'Testing...'}, employ: data.getAll() });	
+	res.render('home', { test: { prop: 'Testing...' }, employ: data.getAll() });
 });
 
 // send plain text response
@@ -45,5 +39,5 @@ app.use((req, res) => {
 
 app.listen(app.get('port'), () => {
 	console.log('Express started');
-   });
+});
 
