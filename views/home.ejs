@@ -10,9 +10,8 @@
 <body>
     <h1>Welcome to the Home Page</h1>
     <h2> List of employees</h2>
-    <!-- <%= test.prop %> -->
 <ul>
-<% employ.forEach(employee => { %>
+<% employees.forEach(employee => { %>
     <li><a href="/detail?name=<%= employee.name %>"> <%= employee.name %> </li>
 <% }); %>
 </ul>

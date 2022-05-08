@@ -11,11 +11,11 @@
     <p><a href="/">Home</a></p>
     <h1>Employee Details </h1>
     <ul>
-        <% if (name) {%>
-        <li>Name: <%= name %></li>
-        <li>Position: <%= position %></li>
-        <li>Start Time: <%= startTime %></li>
-        <li>End Time: <%= endTime %></li>
+        <% if (employee) {%>
+        <li>Name: <%= employee.name %></li>
+        <li>Position: <%= employee.position %></li>
+        <li>Start Time: <%= employee.startTime %></li>
+        <li>End Time: <%= employee.endTime %></li>
         <%} else {%>
         <li>Error: <%= error %></li>
         <%}%>

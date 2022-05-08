@@ -2,18 +2,25 @@
 import * as data from './data.js';
 //import express
 import express from 'express';
+//import mongoose employees
+import { Employees } from './Employees/Employees.js';
 
-const app = express();//set port
+const app = express(); //set port
 app.set('port', process.env.PORT || 3000);
 app.use(express.static('./public')); // send static files
 app.use(express.urlencoded()); //send Parse URL-encoded bodies
 app.use(express.json()); //parses json bodies
-app.set('view engine', 'ejs');//sets ejs as view engine
+app.set('view engine', 'ejs'); //sets ejs as view engine
 
 // send static file as response
 app.get('/', (req, res) => {
 	res.type('text/html');
-	res.render('home', { test: { prop: 'Testing...' }, employ: data.getAll() });
+	Employees.find({})
+		.lean()
+		.then((employees) => {
+			res.render('home', { employees });
+		})
+		.catch((err) => next(err));
 });
 
 // send plain text response
@@ -24,10 +31,29 @@ app.get('/about', (req, res) => {
 
 // send detail query
 app.get('/detail', (req, res) => {
-	console.log(req.query.name)
-	let search = data.getItem(req.query.name)
+	console.log(req.query.name);
+	let search = req.query.name;
 	res.type('text/html');
-	res.render('detail', { name: search.name, position: search.position, startTime: search.startTime, endTime: search.endTime, error: search.error })
+	Employees.findOne({ name: search })
+		.lean()
+		.then((employee) => {
+			res.render('detail', { employee: employee });
+		})
+		.catch((err) => next(err));
+});
+
+//delete route
+app.get('/delete', (req, res) => {
+	console.log(req.query.name);
+	let search = req.query.name;
+	res.type('text/html');
+	Employees.findOneAndDelete({ name: search })
+		.then((result) => {
+			console.log(`Deleted: ${result}`);
+		})
+		.catch((err) => {
+			next(err);
+		});
 });
 
 // define 404 handler
@@ -40,4 +66,3 @@ app.use((req, res) => {
 app.listen(app.get('port'), () => {
 	console.log('Express started');
 });
-
