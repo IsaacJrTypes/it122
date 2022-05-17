@@ -24,4 +24,5 @@ const employeesSchema = new Schema({
  endTime: String
 });
 
+
 export const Employees = mongoose.model('Employees', employeesSchema);

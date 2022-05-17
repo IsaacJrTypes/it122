@@ -4,14 +4,76 @@ import * as data from './data.js';
 import express from 'express';
 //import mongoose employees
 import { Employees } from './Employees/Employees.js';
+//import cors
+import cors from 'cors';
 
 const app = express(); //set port
 app.set('port', process.env.PORT || 3000);
 app.use(express.static('./public')); // send static files
-app.use(express.urlencoded()); //send Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true })); //send Parse URL-encoded bodies
 app.use(express.json()); //parses json bodies
 app.set('view engine', 'ejs'); //sets ejs as view engine
+app.use('/api', cors()); // set Access-Control-Allow-Origin header for api route
 
+
+/* API routing */
+// getAll()
+app.get('/api/employees', (req, res) => {
+	Employees.find({})
+		.lean()
+		.then((employees) => {
+			if (employees) {
+				res.status(200);
+				return res.json({ success: 'getAll()', employees: employees });
+			} else {
+				res.status(500);
+				return res.json({ success: 'getAll() fail' });
+			}
+		})
+		.catch((err) => next(err));
+});
+
+// getItem()
+app.get('/api/employee/:name', (req, res) => {
+	const search = req.params.name;
+	Employees.findOne({ name: search })
+		.lean()
+		.then((employee) => {
+			if (employee) {
+				res.status(200);
+				return res.json({ success: 'getItem()', employee: employee });
+			} else {
+				res.status(500);
+				return res.json({ success: 'getItem() fail'})
+			}
+		})
+		.catch((err) => console.log(err));
+});
+
+app.get('/api/delete/:name', (req,res) => {
+	const search = req.params.name;
+	Employees.findOneAndDelete({ name: search })
+	.then((result) => {
+		if (result) {
+			res.status(200);
+			return res.json({ success: `Found and Deleted: ${result}` });
+		} else {
+			res.status(500)
+			return res.json({ success: `Failed to find and delete: ${search}`})
+		}
+	})
+	.catch((err) => {
+		console.log(err);
+	});
+})
+
+//add new entry
+app.post('/api/add', (res,req) =>{
+	console.log(req.body)	
+})
+
+
+/* http Routing */
 // send static file as response
 app.get('/', (req, res) => {
 	res.type('text/html');
