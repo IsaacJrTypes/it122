@@ -1,0 +1,75 @@
+<!DOCTYPE html><!-- Run page using liveServer extention -->
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <!-- Works like jQuery and bootstrap -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <style>
+      .title {color:green;}
+  </style>
+  <body>
+    <!-- React needs root div -->
+    <div id="root"></div>
+    <script type="text/babel">//allows jsx syntax to be read
+        //styles: see props.user
+        const divStyle = {
+        color: 'blue',
+        };
+
+        const names = ["dave", "sue", "keisha", "darrell"];
+        const NamesList = (props) => {
+            console.log(props)
+            return props.items.map((item) =>  <li key={item}>{item}</li>);
+        }
+    
+        const MyApp = (props) => {//custom componants always start capital letter
+        console.log(props)
+        if (props.user) {
+        return <span><h1 style={divStyle}>Hello, {props.user}!</h1><NamesList items={names} /></span>;
+        }
+        
+        
+        const greeting = <h1 className="title">Que pasa, world!</h1>;//contains js and xml
+        //cant have same level but can with same parent so:
+        //const greeting = <span><h1>This is</h1><h1>valid syntax</h1></span>;
+        return greeting;
+
+        /* jsx syntax, simpler than :
+
+        const greeting = {
+        type: 'h1',
+        props: {
+            className: 'greeting',
+            children: 'Hello, world'
+            }
+        };   */
+      }
+
+      const container = document.getElementById('root');
+      const root = ReactDOM.createRoot(container);
+
+      root.render(<MyApp user="Isaac"/>);
+      //tells func returns jsx, like selfclosing html obj, change to user=
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      Read this section for a production-ready setup with JSX:
+      https://reactjs.org/docs/add-react-to-a-website.html#add-jsx-to-a-project
+
+      In a larger project, you can use an integrated toolchain that includes JSX instead:
+      https://reactjs.org/docs/create-a-new-react-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      https://reactjs.org/docs/react-without-jsx.html
+    -->
+  </body>
+</html>
