@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>React</title>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+    const greeting = "Hello world of react!";
+    const employees = <%-employees%>;
+    
+    const Headers = () => {
+        return (
+            <div>
+                <h1>Welcome to React Home Page</h1>
+            </div>
+        )
+    }
+
+
+    const List = (props) => {
+        const list = props.list
+        const objItems = list.map((item,index)=><li key={index}><a href={"/detail?name=" + item.name}>{item.name}</a></li>)
+        
+        if(list) {
+            return (
+                <div className="container-list">
+            <h2>List of Employees</h2>
+            <ul>{objItems}</ul>
+            </div>
+            )
+        }
+
+        return <h2>Here is where list would be</h2>
+    }
+ 
+
+    const App = () => {
+    
+        return (
+            <div>
+                <Headers />
+                <List list={employees}/>
+            </div>
+            
+        )
+    }
+
+
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+
+    root.render(<App />);
+
+</script>
+</body>
+</html>

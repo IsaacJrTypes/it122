@@ -7,15 +7,17 @@ import { Employees } from './Employees/Employees.js';
 //import cors
 import cors from 'cors';
 
+import req from 'express/lib/request.js';
+
 const app = express(); //set port
 app.set('port', process.env.PORT || 3000);
 app.use(express.static('./public')); // send static files
-app.use(express.urlencoded({ extended: true })); //send Parse URL-encoded bodies
+app.use(express.urlencoded()); //send Parse URL-encoded bodies
 app.use(express.json()); //parses json bodies
 app.set('view engine', 'ejs'); //sets ejs as view engine
 app.use('/api', cors()); // set Access-Control-Allow-Origin header for api route
 
-
+///////////////////////////////////////////////////////////////////////////////////////
 /* API routing */
 // getAll()
 app.get('/api/employees', (req, res) => {
@@ -69,11 +71,27 @@ app.get('/api/delete/:name', (req,res) => {
 
 //add new entry
 app.post('/api/add', (res,req) =>{
-	console.log(req.body)	
+	const newObj = {"name": req.body.name, "position": req.body.position, "startTime": req.body.startTime, "endTime":req.body.endTime}
+	res.send(newObj)
 })
 
+///////////////////////////////////////////////////////////////////////////////////////
 
 /* http Routing */
+
+//React homepage
+// send static file as response
+app.get('/react', (req, res) => {
+	res.type('text/html');
+	Employees.find({})
+		.lean()
+		.then((employees) => {
+			res.render('react', { employees: JSON.stringify(employees) });
+	
+		})
+		.catch((err) => next(err));
+});
+
 // send static file as response
 app.get('/', (req, res) => {
 	res.type('text/html');
