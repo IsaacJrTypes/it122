@@ -30,31 +30,88 @@
 
     const List = (props) => {
         const list = props.list
-        const objItems = list.map((item,index)=><li key={index}><a href={"/detail?name=" + item.name}>{item.name}</a></li>)
+        const objItems = list.map((item)=><li id={item._id} key={item._id} onClick={props.clickFunc}>{item.name}</li>)
         
         if(list) {
             return (
-                <div className="container-list">
-            <h2>List of Employees</h2>
-            <ul>{objItems}</ul>
+            <div className="container-list">
+                <h2>List of Employees</h2>
+                <ul>{objItems}</ul>
             </div>
             )
         }
 
         return <h2>Here is where list would be</h2>
     }
- 
 
-    const App = () => {
-    
+    const ItemDetail = (props) => {
+        return (
+            <div>
+                    <hr />
+                    <h3>Employee Detail</h3>
+                    <form>
+                    Name: <input type="text" name="name" value={props.item.name || ""} onChange={props.handleChange} /><br/>
+                    Position: <input type="text" name="position" value={props.item.position || ""} onChange={props.handleChange} /><br/>
+                    Start Time: <input type="text" name="startTime" value={props.item.startTime || ""} onChange={props.handleChange} /><br/>
+                    End Time: <input type="text" name="endTime" value={props.item.endTime || ""} onChange={props.handleChange} /><br/>
+
+                    <button name="clear" onClick={props.clearHandler}>Clear</button>
+                    </form>
+                </div>
+        )
+    }
+
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props)
+            this.state = {
+                "data": employees,
+                "selector": {}
+
+            }//end set state
+            
+            //binds function to constructor so setState can can be used in clickHandler func line 63
+            this.clickHandler = this.clickHandler.bind(this)
+            this.handleChange = this.handleChange.bind(this)
+            this.clearHandler = this.clearHandler.bind(this)
+           
+
+        }//end constructor
+
+        //event handler
+        clickHandler = (event) => {
+            console.log(event)
+            const employee = this.state.data.find((employee)=>employee._id == event.target.id)
+            this.setState({"selector": employee})
+        }
+
+        handleChange = (event) => {
+            console.log(event.target.value)
+            let newItem = this.state.selector
+            newItem[event.target.name] = event.target.value
+            this.setState({"selector": newItem})
+        }
+
+        clearHandler = () => {
+            this.setState({"selector":{}})
+        }
+
+
+
+        render() {
         return (
             <div>
                 <Headers />
-                <List list={employees}/>
+                <List list={employees} clickFunc={this.clickHandler} />
+                <ItemDetail item={this.state.selector} handleChange={this.handleChange} onClick={this.clearHandler}/>
+
+                
             </div>
             
         )
     }
+    }//end class
 
 
     const container = document.getElementById('root');

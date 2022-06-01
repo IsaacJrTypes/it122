@@ -11,10 +11,10 @@ import req from 'express/lib/request.js';
 
 const app = express(); //set port
 app.set('port', process.env.PORT || 3000);
+app.set('view engine', 'ejs'); //sets ejs as view engine
 app.use(express.static('./public')); // send static files
 app.use(express.urlencoded()); //send Parse URL-encoded bodies
 app.use(express.json()); //parses json bodies
-app.set('view engine', 'ejs'); //sets ejs as view engine
 app.use('/api', cors()); // set Access-Control-Allow-Origin header for api route
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -71,8 +71,9 @@ app.get('/api/delete/:name', (req,res) => {
 
 //add new entry
 app.post('/api/add', (res,req) =>{
-	const newObj = {"name": req.body.name, "position": req.body.position, "startTime": req.body.startTime, "endTime":req.body.endTime}
-	res.send(newObj)
+	//const newObj = {"name": req.body.name, "position": req.body.position, "startTime": req.body.startTime, "endTime":req.body.endTime}
+	console.log(req.body)
+	
 })
 
 ///////////////////////////////////////////////////////////////////////////////////////
