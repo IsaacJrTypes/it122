@@ -68,33 +68,40 @@ app.get('/api/delete/:name', (req, res) => {
 });
 
 //add new entry
-app.post('/api/add', (req, res) => {
-	const newObj = {
+app.post('/api/add', (req, res,next) => {
+	if(!req.body.name) return res.status(500).json({ success: false, msg:'Need name at least'});
+
+	let obj = {
 		name: req.body.name,
 		position: req.body.position,
 		startTime: req.body.startTime,
 		endTime: req.body.endTime,
-	};
+		_id: req.body._id
+	}
 
-	if (!newObj.name) {
-		res.status(500);
-		return res.json({ success: false, msg: 'Need to include a name or duplicate name' });
-	} else {
-		Employees.updateOne({ name: newObj.name }, newObj, { upsert: true }, (err, result) => {
-			if (err) return console.log(err);
+	Employees.updateOne({name: obj.name}, obj, (err,result)=>{
+		if (err) return next(err);
 
-			if (result.upsertedCount == 0) {
-				res.status(409);
-				return res.json({ success: false, msg: `${newObj.name} name entry already exists` });
-			} else {
-				res.status(200);
-				return res.json({ success: true, msg:`${newObj.name} was added to database` });
-			}
-		}); //end mongodb
-	} //end else
-});
+		if(result.matchedCount == 1) {
+			return res.status(200).json({ success: true, msg: `${obj.name} updated`, updated: true, _id: obj._id})
+		} else {
+			let newObj = new Employees({
+				name: req.body.name,
+				position: req.body.position,
+				startTime: req.body.startTime,
+				endTime: req.body.endTime
+			})
+			console.log(newObj)
+			return newObj.save((err,entry)=> {
+				if (err) return next(err);
 
-///////////////////////////////////////////////////////////////////////////////////////
+				return res.status(200).json({ success: true , msg:`add ${entry.name} to Database`, updated: false, data: entry})
+			})//end save()
+		}//end updateOne else
+	})//end updateOne()
+})//end post
+
+//////////////////////////////////////////////////////////////////////
 
 /* http Routing */
 

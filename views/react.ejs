@@ -17,7 +17,7 @@
 <div id="root"></div>
 <script type="text/babel">
     const greeting = "Hello world of react!";
-    const employees = <%-employees%>;
+    let employees = <%-employees%>;
     
     const Headers = () => {
         return (
@@ -55,8 +55,10 @@
                     Start Time: <input type="text" name="startTime" value={props.item.startTime || ""} onChange={props.handleChange} /><br/>
                     End Time: <input type="text" name="endTime" value={props.item.endTime || ""} onChange={props.handleChange} /><br/>
 
-                    <button name="clear" onClick={props.clearHandler}>Clear</button>
                     </form>
+                    <button name="clear" onClick={props.clearFields}>Clear</button><br/>
+                    <button name="save" onClick={props.saveItem}>Save</button><br/>
+                    <button name="delete" onClick={props.deleteItem}>Delete</button><br/>
                 </div>
         )
     }
@@ -66,8 +68,8 @@
         constructor(props) {
             super(props)
             this.state = {
-                "data": employees,
-                "selector": {}
+                "data": <%-employees%>,
+                "selector": {empty:true}
 
             }//end set state
             
@@ -75,6 +77,7 @@
             this.clickHandler = this.clickHandler.bind(this)
             this.handleChange = this.handleChange.bind(this)
             this.clearHandler = this.clearHandler.bind(this)
+            this.saveHandler = this.saveHandler.bind(this)
            
 
         }//end constructor
@@ -94,17 +97,68 @@
         }
 
         clearHandler = () => {
-            this.setState({"selector":{}})
+            this.setState({"selector":{empty:true}});
         }
+        
+        saveHandler = () => {
+            //console.log(JSON.stringify(this.state.data))
+            
+            let selectorObj = this.state.selector
+            console.log("from saveHandler: " + JSON.stringify(selectorObj))
+            let url = '/api/add'
+            fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(selectorObj)
+            })
+            .then(res => res.json())
+            .then((json) => {
+                console.log('Response: ' + JSON.stringify(json))               
+                //if new entry => new item, add to list
+                if (json.updated === false) {
+                    let newitem = json.data;
+                    let updatedList = <%-employees%>;
+                    updatedList.push(newitem);
+                    this.setState({ data: updatedList })
+                    console.log(JSON.stringify(this.state.data))
+                }
+            })//end api call
+        }// end saveHandler
 
-
+        deleteHandler = () => {
+            if(this.state.selector.empty === true) return
+            
+            let selectorObj = this.state.selector;
+            console.log("from deleteHandler: " + JSON.stringify(selectorObj));
+            let selectorName = selectorObj.name;
+            let url = '/api/delete/' + selectorName;
+            fetch(url)
+            .then(res => res.json())
+            .then((json) => {
+                console.log('Response: ' + JSON.stringify(json))               
+                //if successfull, filter out list
+                if(json.success === true) {
+                    let updatedList = this.state.data.filter(employee => employee.name !== selectorName)
+                    this.setState({"data":updatedList});
+                }//end ! func
+            })//end api call
+            this.clearHandler();
+        }//end delete func
 
         render() {
         return (
             <div>
                 <Headers />
-                <List list={employees} clickFunc={this.clickHandler} />
-                <ItemDetail item={this.state.selector} handleChange={this.handleChange} onClick={this.clearHandler}/>
+                <List 
+                    list={this.state.data} 
+                    clickFunc={this.clickHandler} 
+                />
+                <ItemDetail 
+                    item={this.state.selector} 
+                    handleChange={this.handleChange} clearFields={this.clearHandler} 
+                    saveItem={this.saveHandler} 
+                    deleteItem={this.deleteHandler} 
+                />
 
                 
             </div>
